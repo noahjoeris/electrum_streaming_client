@@ -88,14 +88,6 @@ where
     Ok(bitcoin::Amount::from_sat(sats))
 }
 
-pub fn amount_from_maybe_negative_sats<'de, D>(deserializer: D) -> Result<bitcoin::Amount, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let sats = i64::deserialize(deserializer)?.unsigned_abs();
-    Ok(bitcoin::Amount::from_sat(sats))
-}
-
 pub fn all_inputs_confirmed_bool_from_height<'de, D>(deserializer: D) -> Result<bool, D::Error>
 where
     D: Deserializer<'de>,

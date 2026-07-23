@@ -105,7 +105,7 @@ pub struct HeadersSubscribeResp {
 #[serde(transparent)]
 pub struct RelayFeeResp {
     /// The minimum fee amount that the server will accept for relaying transactions.
-    #[serde(deserialize_with = "crate::custom_serde::amount_from_btc")]
+    #[serde(with = "bitcoin::amount::serde::as_btc")]
     pub fee: Amount,
 }
 
@@ -113,7 +113,7 @@ pub struct RelayFeeResp {
 #[derive(Debug, Clone, serde::Deserialize)]
 pub struct GetBalanceResp {
     /// The confirmed balance in satoshis.
-    #[serde(deserialize_with = "crate::custom_serde::amount_from_sats")]
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
     pub confirmed: Amount,
 
     /// The unconfirmed balance in satoshis.
@@ -179,7 +179,7 @@ pub struct MempoolTx {
     pub txid: bitcoin::Txid,
 
     /// The fee paid by the transaction in satoshis.
-    #[serde(deserialize_with = "crate::custom_serde::amount_from_sats")]
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
     pub fee: bitcoin::Amount,
 
     /// Whether all inputs are confirmed.
@@ -204,7 +204,7 @@ pub struct Utxo {
     pub txid: bitcoin::Txid,
 
     /// The value of the UTXO in satoshis.
-    #[serde(deserialize_with = "crate::custom_serde::amount_from_sats")]
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
     pub value: bitcoin::Amount,
 }
 

@@ -228,13 +228,6 @@ impl Request for HeadersWithCheckpoint {
     }
 }
 
-/// A request for an estimated fee rate needed to confirm a transaction within a target number of
-/// blocks.
-///
-/// This corresponds to the `"blockchain.estimatefee"` Electrum RPC method. It returns the estimated
-/// fee rate (in BTC per kilobyte) required to be included within the specified number of blocks.
-///
-/// See: <https://electrum-protocol.readthedocs.io/en/latest/protocol-methods.html#blockchain-estimatefee>
 /// The fee estimation mode passed to the server's `estimatesmartfee` RPC.
 ///
 /// Added in Electrum protocol v1.6.
@@ -242,9 +235,11 @@ impl Request for HeadersWithCheckpoint {
 /// See: <https://electrum-protocol.readthedocs.io/en/latest/protocol-methods.html#blockchain-estimatefee>
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum EstimateFeeMode {
-    /// Conservative fee estimation (less likely to underestimate).
+    /// Conservative estimate: potentially higher feerate, more likely to meet the target, less
+    /// responsive to short-term fee drops.
     Conservative,
-    /// Economical fee estimation (may underestimate for faster inclusion).
+    /// Economical estimate: potentially lower feerate, more responsive to short-term fee drops, may
+    /// take longer to confirm.
     Economical,
 }
 
@@ -257,6 +252,13 @@ impl EstimateFeeMode {
     }
 }
 
+/// A request for an estimated fee rate needed to confirm a transaction within a target number of
+/// blocks.
+///
+/// This corresponds to the `"blockchain.estimatefee"` Electrum RPC method. It returns the estimated
+/// fee rate (in BTC per kilobyte) required to be included within the specified number of blocks.
+///
+/// See: <https://electrum-protocol.readthedocs.io/en/latest/protocol-methods.html#blockchain-estimatefee>
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct EstimateFee {
     /// The number of blocks to target for confirmation.

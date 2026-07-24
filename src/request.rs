@@ -16,7 +16,7 @@
 //! [`to_method_and_params`]: Request::to_method_and_params
 //! [`Response`]: Request::Response
 
-use bitcoin::{consensus::Encodable, hex::DisplayHex, Script, Txid};
+use bitcoin::{consensus::encode::serialize_hex, Script, Txid};
 
 use crate::{
     response, CowStr, ElectrumScriptHash, ElectrumScriptStatus, MethodAndParams, RawRequest,
@@ -543,11 +543,9 @@ impl Request for BroadcastTx {
     type Response = bitcoin::Txid;
 
     fn to_method_and_params(&self) -> MethodAndParams {
-        let mut tx_bytes = Vec::<u8>::new();
-        self.0.consensus_encode(&mut tx_bytes).expect("must encode");
         (
             "blockchain.transaction.broadcast".into(),
-            vec![tx_bytes.to_lower_hex_string().into()],
+            vec![serialize_hex(&self.0).into()],
         )
     }
 }
@@ -644,15 +642,8 @@ impl Request for BroadcastPackage {
     type Response = response::BroadcastPackageResp;
 
     fn to_method_and_params(&self) -> MethodAndParams {
-        let txs: Vec<serde_json::Value> = self
-            .0
-            .iter()
-            .map(|tx| {
-                let mut tx_bytes = Vec::<u8>::new();
-                tx.consensus_encode(&mut tx_bytes).expect("must encode");
-                tx_bytes.to_lower_hex_string().into()
-            })
-            .collect();
+        let txs: Vec<serde_json::Value> =
+            self.0.iter().map(|tx| serialize_hex(tx).into()).collect();
         (
             "blockchain.transaction.broadcast_package".into(),
             vec![txs.into()],

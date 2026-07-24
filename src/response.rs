@@ -320,6 +320,21 @@ pub struct FeePair {
 pub struct BroadcastPackageResp {
     /// Whether the package was accepted by the server.
     pub success: bool,
+
+    /// Per-transaction errors for txs that were not accepted, if any.
+    ///
+    /// Present when `success` is `false`.
+    pub errors: Option<Vec<BroadcastPackageError>>,
+}
+
+/// A per-transaction rejection inside [`BroadcastPackageResp::errors`].
+#[derive(Debug, Clone, serde::Deserialize)]
+pub struct BroadcastPackageError {
+    /// The rejected transaction's txid.
+    pub txid: bitcoin::Txid,
+
+    /// The rejection reason (e.g. `"bad-txns-inputs-missingorspent"`).
+    pub error: String,
 }
 
 /// Response to the `"mempool.get_info"` method.

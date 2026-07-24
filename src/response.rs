@@ -132,7 +132,7 @@ pub struct HeadersSubscribeResp {
     pub height: u32,
 }
 
-/// Response to the `"server.relayfee"` method.
+/// Response to the `"blockchain.relayfee"` method.
 #[derive(Debug, Clone, serde::Deserialize)]
 #[serde(transparent)]
 pub struct RelayFeeResp {

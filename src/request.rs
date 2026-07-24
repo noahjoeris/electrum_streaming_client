@@ -305,7 +305,7 @@ impl Request for HeadersSubscribe {
 
 /// A request for the minimum fee rate accepted by the Electrum server's mempool.
 ///
-/// This corresponds to the `"server.relayfee"` Electrum RPC method. It returns the minimum
+/// This corresponds to the `"blockchain.relayfee"` Electrum RPC method. It returns the minimum
 /// fee rate (in BTC per kilobyte) that the server will accept for relaying transactions.
 ///
 /// Removed in Electrum protocol v1.6 — use [`GetMempoolInfo`] (`mempool.get_info`) when

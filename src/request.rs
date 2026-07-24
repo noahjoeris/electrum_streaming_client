@@ -311,7 +311,7 @@ impl Request for HeadersSubscribe {
 /// Removed in Electrum protocol v1.6 — use [`GetMempoolInfo`] (`mempool.get_info`) when
 /// targeting v1.6+ servers.
 ///
-/// See: <https://electrum-protocol.readthedocs.io/en/latest/protocol-methods.html#server-relayfee>
+/// See: <https://electrum-protocol.readthedocs.io/en/latest/protocol-removed.html#blockchain-relayfee>
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct RelayFee;
 
@@ -731,9 +731,7 @@ impl Request for ServerVersion {
 /// This corresponds to the `"mempool.get_info"` Electrum RPC method. It returns fee-related
 /// parameters including `mempoolminfee`, `minrelaytxfee`, and `incrementalrelayfee`.
 ///
-/// This replaces the `blockchain.relayfee` method, which was removed in v1.6.
-///
-/// Added in Electrum protocol v1.6.
+/// Added in Electrum protocol v1.6 and replaces the `blockchain.relayfee` method.
 ///
 /// See: <https://electrum-protocol.readthedocs.io/en/latest/protocol-methods.html#mempool-get-info>
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

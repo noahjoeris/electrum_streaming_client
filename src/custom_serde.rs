@@ -59,6 +59,23 @@ where
     }
 }
 
+fn feerate_from_btc_per_kb_f32<E: Error>(btc_per_kvb: f32) -> Result<bitcoin::FeeRate, E> {
+    if btc_per_kvb.is_sign_negative() {
+        return Err(E::custom("expected non-negative fee rate in BTC/kvB"));
+    }
+    let sat_per_kwu = btc_per_kvb * (100_000_000.0 / 4.0);
+    Ok(bitcoin::FeeRate::from_sat_per_kwu(sat_per_kwu as _))
+}
+
+/// BTC/kvB → [`bitcoin::FeeRate`]; errors if negative.
+pub fn feerate_from_btc_per_kb<'de, D>(deserializer: D) -> Result<bitcoin::FeeRate, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    feerate_from_btc_per_kb_f32(f32::deserialize(deserializer)?)
+}
+
+/// BTC/kvB → [`bitcoin::FeeRate`]; negative → `None`.
 pub fn feerate_opt_from_btc_per_kb<'de, D>(
     deserializer: D,
 ) -> Result<Option<bitcoin::FeeRate>, D::Error>
@@ -69,8 +86,7 @@ where
     if btc_per_kvb.is_sign_negative() {
         return Ok(None);
     }
-    let sat_per_kwu = btc_per_kvb * (100_000_000.0 / 4.0);
-    Ok(Some(bitcoin::FeeRate::from_sat_per_kwu(sat_per_kwu as _)))
+    feerate_from_btc_per_kb_f32(btc_per_kvb).map(Some)
 }
 
 pub fn feerate_from_sat_per_byte<'de, D>(deserializer: D) -> Result<bitcoin::FeeRate, D::Error>

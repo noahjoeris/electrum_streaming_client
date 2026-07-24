@@ -339,22 +339,22 @@ pub struct BroadcastPackageError {
 
 /// Response to the `"mempool.get_info"` method.
 ///
-/// Provides fee-related information about the server's mempool. All fee rates are in BTC/kvB.
+/// Provides fee-related information about the server's mempool.
 ///
 /// See: <https://electrum-protocol.readthedocs.io/en/latest/protocol-methods.html#mempool-get-info>
 #[derive(Debug, Clone, serde::Deserialize)]
 pub struct MempoolInfoResp {
-    /// The minimum fee rate (BTC/kvB) for a transaction to be accepted into the mempool.
-    #[serde(deserialize_with = "crate::custom_serde::feerate_opt_from_btc_per_kb")]
-    pub mempoolminfee: Option<bitcoin::FeeRate>,
+    /// The minimum fee rate for a transaction to be accepted into the mempool.
+    #[serde(deserialize_with = "crate::custom_serde::feerate_from_btc_per_kb")]
+    pub mempoolminfee: bitcoin::FeeRate,
 
-    /// The minimum relay fee rate (BTC/kvB).
-    #[serde(deserialize_with = "crate::custom_serde::feerate_opt_from_btc_per_kb")]
-    pub minrelaytxfee: Option<bitcoin::FeeRate>,
+    /// The minimum relay fee rate.
+    #[serde(deserialize_with = "crate::custom_serde::feerate_from_btc_per_kb")]
+    pub minrelaytxfee: bitcoin::FeeRate,
 
-    /// The incremental relay fee rate (BTC/kvB).
-    #[serde(deserialize_with = "crate::custom_serde::feerate_opt_from_btc_per_kb")]
-    pub incrementalrelayfee: Option<bitcoin::FeeRate>,
+    /// The incremental relay fee rate.
+    #[serde(deserialize_with = "crate::custom_serde::feerate_from_btc_per_kb")]
+    pub incrementalrelayfee: bitcoin::FeeRate,
 }
 
 /// Response to the `"server.features"` method.

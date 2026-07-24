@@ -20,12 +20,22 @@ use crate::DoubleSHA;
 ///
 /// See: <https://electrum-protocol.readthedocs.io/en/latest/protocol-methods.html#server-version>
 #[derive(Debug, Clone, serde::Deserialize)]
+#[serde(from = "(String, String)")]
 pub struct ServerVersionResp {
-    /// The server's software version string.
+    /// Server software version (e.g. `"ElectrumX 1.18.0"`).
     pub server_software: String,
 
-    /// The negotiated protocol version string.
+    /// Negotiated protocol version (e.g. `"1.4"`).
     pub protocol_version: String,
+}
+
+impl From<(String, String)> for ServerVersionResp {
+    fn from((server_software, protocol_version): (String, String)) -> Self {
+        Self {
+            server_software,
+            protocol_version,
+        }
+    }
 }
 
 /// Response to the `"blockchain.block.header"` method (without checkpoint).

@@ -185,9 +185,10 @@ impl Request for Headers {
     type Response = response::HeadersResp;
 
     fn to_method_and_params(&self) -> MethodAndParams {
-        ("blockchain.block.headers".into(), {
-            vec![self.start_height.into(), self.count.into()]
-        })
+        (
+            "blockchain.block.headers".into(),
+            vec![self.start_height.into(), self.count.into()],
+        )
     }
 }
 
@@ -218,13 +219,14 @@ impl Request for HeadersWithCheckpoint {
     type Response = response::HeadersWithCheckpointResp;
 
     fn to_method_and_params(&self) -> MethodAndParams {
-        ("blockchain.block.headers".into(), {
+        (
+            "blockchain.block.headers".into(),
             vec![
                 self.start_height.into(),
                 self.count.into(),
                 self.cp_height.into(),
-            ]
-        })
+            ],
+        )
     }
 }
 
@@ -676,6 +678,31 @@ impl Request for GetFeeHistogram {
     }
 }
 
+/// The `protocol_version` param for [`ServerVersion`].
+///
+/// Corresponds to the second argument of `server.version`: either a single version string, or a
+/// `[protocol_min, protocol_max]` range.
+///
+/// See: <https://electrum-protocol.readthedocs.io/en/latest/protocol-methods.html#server-version>
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum SupportedVersion {
+    /// A single version string (e.g. `"1.6"`). Equivalent to a range where min == max.
+    Exact(CowStr),
+    /// A version range `[protocol_min, protocol_max]` (e.g. `["1.4", "1.6"]`).
+    Range([CowStr; 2]),
+}
+
+impl From<&SupportedVersion> for serde_json::Value {
+    fn from(value: &SupportedVersion) -> Self {
+        match value {
+            SupportedVersion::Exact(version) => version.as_ref().into(),
+            SupportedVersion::Range([min, max]) => {
+                serde_json::Value::Array(vec![min.as_ref().into(), max.as_ref().into()])
+            }
+        }
+    }
+}
+
 /// A request to negotiate the protocol version with the Electrum server.
 ///
 /// This corresponds to the `"server.version"` Electrum RPC method. It identifies the client and
@@ -690,10 +717,8 @@ pub struct ServerVersion {
     /// A string identifying the client software (e.g., `"electrum_streaming_client/0.5"`).
     pub client_name: CowStr,
 
-    /// The protocol version or version range the client supports.
-    ///
-    /// Can be a single version string (e.g., `"1.6"`) or an array-style string for a range.
-    pub protocol_version: CowStr,
+    /// The protocol version range the client supports.
+    pub protocol_version: SupportedVersion,
 }
 
 impl Request for ServerVersion {
@@ -704,7 +729,7 @@ impl Request for ServerVersion {
             "server.version".into(),
             vec![
                 self.client_name.as_ref().into(),
-                self.protocol_version.as_ref().into(),
+                (&self.protocol_version).into(),
             ],
         )
     }
